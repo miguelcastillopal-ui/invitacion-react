@@ -2,6 +2,26 @@ import { useState, useEffect } from "react";
 import invitacionImg from "./assets/invitacion.jpg";
 import "./App.css";
 
+    const drawWrappedText = (ctx, text, x, y, maxWidth, lineHeight) => {
+  const words = text.split(" ");
+  let line = "";
+
+  for (let i = 0; i < words.length; i++) {
+    const testLine = line + words[i] + " ";
+    const { width } = ctx.measureText(testLine);
+
+    if (width > maxWidth && i > 0) {
+      ctx.fillText(line, x, y);
+      line = words[i] + " ";
+      y += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+
+  ctx.fillText(line, x, y);
+};
+
 function App() {
   const [tratamiento, setTratamiento] = useState("");
   const [nombre, setNombre] = useState("");
@@ -11,10 +31,9 @@ function App() {
 
   // ===== GENERAR INVITACIÓN (ÚNICA FUENTE DE VERDAD) =====
   const generarInvitacion = () => {
-    if (!tratamiento && !nombre) {
-      setPreviewUrl(null);
-      return;
-    }
+  
+
+
 
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -37,17 +56,22 @@ function App() {
 
       // ESTIMADO
       ctx.font = `bold ${28 * scale}px serif`;
-      const yTratamiento = 180 * scale;
+      const yTratamiento = 60 * scale;
       ctx.fillText(tratamiento, canvas.width / 2, yTratamiento);
 
       // NOMBRE
       ctx.font = `bold ${36 * scale}px serif`;
       const yNombre = yTratamiento + 45 * scale;
-      ctx.fillText(
-        nombre || "Nombre del invitado",
-        canvas.width / 2,
-        yNombre
-      );
+      
+      drawWrappedText(
+    ctx,
+    nombre || "Nombre del invitado",
+    canvas.width / 2,
+    yNombre,
+    canvas.width * 1,
+    48 * scale
+    );
+
 
       setPreviewUrl(canvas.toDataURL("image/jpeg", 0.92));
     };
