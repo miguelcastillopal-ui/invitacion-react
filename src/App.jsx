@@ -24,6 +24,8 @@ const descargarImagen = () => {
     // Tamaño real de la imagen
     canvas.width = img.width;
     canvas.height = img.height;
+    const scale = canvas.width / 400;
+
 
     // Fondo
     ctx.drawImage(img, 0, 0);
@@ -33,19 +35,21 @@ const descargarImagen = () => {
     ctx.textAlign = "center";
 
     // Tratamiento
-    ctx.font = "bold 28px serif";
+    ctx.font = `bold ${28 * scale}px serif`;
     ctx.fillText(tratamiento, canvas.width / 2, 90);
 
     // Nombre (salta línea si es largo)
-    ctx.font = "bold 36px serif";
+    ctx.font = `bold ${36 * scale}px serif`;
+    
     wrapText(
       ctx,
       nombre || "Nombre del invitado",
       canvas.width / 2,
-      150,
+      150 * scale,
       canvas.width * 0.8,
-      42
+      42 * scale
     );
+
 
     // Descargar
     const link = document.createElement("a");
