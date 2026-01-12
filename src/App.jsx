@@ -17,10 +17,14 @@ const descargarImagen = async () => {
   if (!invitacionRef.current) return;
 
   try {
+    // ⏱️ Espera mínima para Safari
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
     const dataUrl = await toJpeg(invitacionRef.current, {
       cacheBust: true,
       pixelRatio: 2,
       quality: 0.92,
+      backgroundColor: "#ffffff",
     });
 
     const link = document.createElement("a");
@@ -35,7 +39,6 @@ const descargarImagen = async () => {
     alert("No se pudo descargar la invitación");
   }
 };
-
 
 
 
