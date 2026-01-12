@@ -10,8 +10,6 @@ function App() {
   const invitacionRef = useRef(null);
   const puedeDescargar = nombre.trim() && tratamiento;
   
-
-
 const descargarImagen = () => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -24,40 +22,51 @@ const descargarImagen = () => {
     // Tamaño real de la imagen
     canvas.width = img.width;
     canvas.height = img.height;
-    const scale = canvas.width / 400;
 
-
-    // Fondo
+    // Dibujar fondo
     ctx.drawImage(img, 0, 0);
 
-    // Texto común
+    // Escala basada en el ancho visual (400px en CSS)
+    const scale = canvas.width / 400;
+
+    // ===== CONFIGURACIÓN DE DISEÑO =====
+    const baseYTratamiento = 140;     // ↓ baja o sube "Estimado"
+    const espacioEntreTextos = 30;    // ↓ espacio real entre textos
+
+    // ===== TRATAMIENTO =====
     ctx.fillStyle = "#496052";
     ctx.textAlign = "center";
-
-    // Tratamiento
     ctx.font = `bold ${28 * scale}px serif`;
-    ctx.fillText(tratamiento, canvas.width / 2, 90);
 
-    // Nombre (salta línea si es largo)
+    const yTratamiento = baseYTratamiento * scale;
+    ctx.fillText(tratamiento, canvas.width / 2, yTratamiento);
+
+    // ===== NOMBRE =====
     ctx.font = `bold ${36 * scale}px serif`;
-    
+
+    const yNombre =
+      yTratamiento +
+      28 * scale +
+      espacioEntreTextos * scale;
+
     wrapText(
       ctx,
       nombre || "Nombre del invitado",
       canvas.width / 2,
-      150 * scale,
+      yNombre,
       canvas.width * 0.8,
       42 * scale
     );
 
-
-    // Descargar
+    // Descargar JPG
     const link = document.createElement("a");
     link.download = "invitacion.jpg";
     link.href = canvas.toDataURL("image/jpeg", 0.92);
     link.click();
   };
 };
+
+
 
 const wrapText = (ctx, text, x, y, maxWidth, lineHeight) => {
   const words = text.split(" ");
@@ -78,6 +87,7 @@ const wrapText = (ctx, text, x, y, maxWidth, lineHeight) => {
   }
   ctx.fillText(line, x, y);
 };
+
 
 
 
