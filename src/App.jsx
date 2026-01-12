@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import { toPng } from "html-to-image";
 import invitacionImg from "./assets/invitacion.jpg";
 import "./App.css";
-import { toJpeg } from "html-to-image";
 
 
 function App() {
@@ -13,31 +12,67 @@ function App() {
   
 
 
-const descargarImagen = async () => {
-  if (!invitacionRef.current) return;
+const descargarImagen = () => {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
 
-  try {
-    // ⏱️ Espera mínima para Safari
-    await new Promise((resolve) => setTimeout(resolve, 300));
+  const img = new Image();
+  img.src = invitacionImg;
+  img.crossOrigin = "anonymous";
 
-    const dataUrl = await toJpeg(invitacionRef.current, {
-      cacheBust: true,
-      pixelRatio: 2,
-      quality: 0.92,
-      backgroundColor: "#ffffff",
-    });
+  img.onload = () => {
+    // Tamaño real de la imagen
+    canvas.width = img.width;
+    canvas.height = img.height;
 
+    // Fondo
+    ctx.drawImage(img, 0, 0);
+
+    // Texto común
+    ctx.fillStyle = "#496052";
+    ctx.textAlign = "center";
+
+    // Tratamiento
+    ctx.font = "bold 28px serif";
+    ctx.fillText(tratamiento, canvas.width / 2, 90);
+
+    // Nombre (salta línea si es largo)
+    ctx.font = "bold 36px serif";
+    wrapText(
+      ctx,
+      nombre || "Nombre del invitado",
+      canvas.width / 2,
+      150,
+      canvas.width * 0.8,
+      42
+    );
+
+    // Descargar
     const link = document.createElement("a");
-    link.href = dataUrl;
     link.download = "invitacion.jpg";
-
-    document.body.appendChild(link);
+    link.href = canvas.toDataURL("image/jpeg", 0.92);
     link.click();
-    document.body.removeChild(link);
-  } catch (error) {
-    console.error("Error al generar la imagen:", error);
-    alert("No se pudo descargar la invitación");
+  };
+};
+
+const wrapText = (ctx, text, x, y, maxWidth, lineHeight) => {
+  const words = text.split(" ");
+  let line = "";
+
+  for (let n = 0; n < words.length; n++) {
+    const testLine = line + words[n] + " ";
+    const metrics = ctx.measureText(testLine);
+    const testWidth = metrics.width;
+
+    if (testWidth > maxWidth && n > 0) {
+      ctx.fillText(line, x, y);
+      line = words[n] + " ";
+      y += lineHeight;
+    } else {
+      line = testLine;
+    }
   }
+  ctx.fillText(line, x, y);
 };
 
 
