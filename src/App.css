@@ -33,14 +33,14 @@ input {
 /* CONTENEDOR DE TEXTO */
 .texto-overlay {
   position: absolute;
-  top: 160px;          /* ← AJUSTE GLOBAL (solo este) */
+  top: 60px;          /* ← AJUSTE GLOBAL (solo este) */
   left: 50%;
   transform: translateX(-50%);
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;           /* ← ESPACIO REAL ENTRE ESTIMADO Y NOMBRE */
+  gap: 8px;           /* ← ESPACIO REAL ENTRE ESTIMADO Y NOMBRE */
 }
 
 /* ESTIMADO */
@@ -93,3 +93,4 @@ h1 {
     font-family: 'Arial', sans-serif; /* Fuente */
     margin-top: 20px;      /* Espacio arriba */
 }
+
