@@ -103,9 +103,11 @@ function App() {
         <option value="" disabled>
           Elija una opción
         </option>
+        <option value="Estimado">Hola</option>
         <option value="Estimado">Estimado</option>
         <option value="Estimada">Estimada</option>
         <option value="Estimados">Estimados</option>
+
       </select>
 
       <input
