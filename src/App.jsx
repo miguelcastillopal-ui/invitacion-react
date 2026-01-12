@@ -1,115 +1,88 @@
-import { useState, useRef } from "react";
-import { toPng } from "html-to-image";
+import { useState, useEffect } from "react";
 import invitacionImg from "./assets/invitacion.jpg";
 import "./App.css";
-
 
 function App() {
   const [tratamiento, setTratamiento] = useState("");
   const [nombre, setNombre] = useState("");
-  const invitacionRef = useRef(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
   const puedeDescargar = nombre.trim() && tratamiento;
-  
-const descargarImagen = () => {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
 
-  const img = new Image();
-  img.src = invitacionImg;
-  img.crossOrigin = "anonymous";
+  // ===== GENERAR INVITACIÓN (ÚNICA FUENTE DE VERDAD) =====
+  const generarInvitacion = () => {
+    if (!tratamiento && !nombre) {
+      setPreviewUrl(null);
+      return;
+    }
 
-  img.onload = () => {
-    // Tamaño real de la imagen
-    canvas.width = img.width;
-    canvas.height = img.height;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
 
-    // Dibujar fondo
-    ctx.drawImage(img, 0, 0);
+    const img = new Image();
+    img.src = invitacionImg;
+    img.crossOrigin = "anonymous";
 
-    // Escala basada en el ancho visual (400px en CSS)
-    const scale = canvas.width / 400;
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
 
-    // ===== CONFIGURACIÓN DE DISEÑO =====
-    const baseYTratamiento = 140;     // ↓ baja o sube "Estimado"
-    const espacioEntreTextos = 30;    // ↓ espacio real entre textos
+      // Fondo
+      ctx.drawImage(img, 0, 0);
 
-    // ===== TRATAMIENTO =====
-    ctx.fillStyle = "#496052";
-    ctx.textAlign = "center";
-    ctx.font = `bold ${28 * scale}px serif`;
+      const scale = canvas.width / 400;
 
-    const yTratamiento = baseYTratamiento * scale;
-    ctx.fillText(tratamiento, canvas.width / 2, yTratamiento);
+      ctx.fillStyle = "#496052";
+      ctx.textAlign = "center";
 
-    // ===== NOMBRE =====
-    ctx.font = `bold ${36 * scale}px serif`;
+      // ESTIMADO
+      ctx.font = `bold ${28 * scale}px serif`;
+      const yTratamiento = 180 * scale;
+      ctx.fillText(tratamiento, canvas.width / 2, yTratamiento);
 
-    const yNombre =
-      yTratamiento +
-      28 * scale +
-      espacioEntreTextos * scale;
+      // NOMBRE
+      ctx.font = `bold ${36 * scale}px serif`;
+      const yNombre = yTratamiento + 45 * scale;
+      ctx.fillText(
+        nombre || "Nombre del invitado",
+        canvas.width / 2,
+        yNombre
+      );
 
-    wrapText(
-      ctx,
-      nombre || "Nombre del invitado",
-      canvas.width / 2,
-      yNombre,
-      canvas.width * 0.8,
-      42 * scale
-    );
+      setPreviewUrl(canvas.toDataURL("image/jpeg", 0.92));
+    };
+  };
 
-    // Descargar JPG
+  // Regenerar cada vez que cambia el texto
+  useEffect(() => {
+    generarInvitacion();
+  }, [tratamiento, nombre]);
+
+  // ===== DESCARGAR =====
+  const descargarImagen = () => {
+    if (!previewUrl) return;
+
     const link = document.createElement("a");
+    link.href = previewUrl;
     link.download = "invitacion.jpg";
-    link.href = canvas.toDataURL("image/jpeg", 0.92);
     link.click();
   };
-};
-
-
-
-const wrapText = (ctx, text, x, y, maxWidth, lineHeight) => {
-  const words = text.split(" ");
-  let line = "";
-
-  for (let n = 0; n < words.length; n++) {
-    const testLine = line + words[n] + " ";
-    const metrics = ctx.measureText(testLine);
-    const testWidth = metrics.width;
-
-    if (testWidth > maxWidth && n > 0) {
-      ctx.fillText(line, x, y);
-      line = words[n] + " ";
-      y += lineHeight;
-    } else {
-      line = testLine;
-    }
-  }
-  ctx.fillText(line, x, y);
-};
-
-
-
 
   return (
-    
     <div className="container">
       <h1>Invitación Personalizada</h1>
 
       <select
-  value={tratamiento}
-  onChange={(e) => setTratamiento(e.target.value)}
-    >
-    <option value="" disabled>
-    Elija una opción
-    </option>
-
-    <option value="Estimado">Estimado</option>
-    <option value="Estimada">Estimada</option>
-    <option value="Estimados">Estimados</option>
-    </select>
-
-
+        value={tratamiento}
+        onChange={(e) => setTratamiento(e.target.value)}
+      >
+        <option value="" disabled>
+          Elija una opción
+        </option>
+        <option value="Estimado">Estimado</option>
+        <option value="Estimada">Estimada</option>
+        <option value="Estimados">Estimados</option>
+      </select>
 
       <input
         type="text"
@@ -118,45 +91,27 @@ const wrapText = (ctx, text, x, y, maxWidth, lineHeight) => {
         onChange={(e) => setNombre(e.target.value)}
       />
 
-      {/* INVITACIÓN */}
-      <div className="invitacion" ref={invitacionRef}>
-        
-          <img
-          src={invitacionImg}
-          alt="Invitación"
-          onLoad={() => setImagenLista(true)}
-          crossOrigin="anonymous"
-          />
-
-
-        <div className="tratamiento-overlay">
-          {tratamiento}
-        </div>
-
-        <div className="nombre-overlay">
-          {nombre || "Nombre del invitado"}
-        </div>
-      </div>
+      {/* VISTA PREVIA REAL (CANVAS) */}
+      {previewUrl && (
+        <img
+          src={previewUrl}
+          alt="Vista previa invitación"
+          style={{ width: "100%", maxWidth: "420px", marginTop: "20px" }}
+        />
+      )}
 
       {/* BOTÓN DESCARGA */}
-
-<button
-  className="descargar-btn"
-  onClick={puedeDescargar ? descargarImagen : undefined}
-  title={
-    puedeDescargar
-      ? ""
-      : "No disponible: debe elegir una opción y/o escribir el nombre del invitado"
-  }
-  style={{
-    cursor: puedeDescargar ? "pointer" : "not-allowed",
-    opacity: puedeDescargar ? 1 : 0.6,
-  }}
->
-  Descargar invitación
-</button>
-
-
+      <button
+        className="descargar-btn"
+        onClick={puedeDescargar ? descargarImagen : undefined}
+        style={{
+          cursor: puedeDescargar ? "pointer" : "not-allowed",
+          opacity: puedeDescargar ? 1 : 0.6,
+          marginTop: "15px",
+        }}
+      >
+        Descargar invitación
+      </button>
     </div>
   );
 }
