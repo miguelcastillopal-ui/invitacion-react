@@ -1,30 +1,31 @@
 import { useState, useRef } from "react";
 import { toPng } from "html-to-image";
-import invitacionImg from "./assets/invitacion.png";
+import invitacionImg from "./assets/invitacion.jpg";
 import "./App.css";
+import { toJpeg } from "html-to-image";
+
 
 function App() {
   const [tratamiento, setTratamiento] = useState("");
   const [nombre, setNombre] = useState("");
   const invitacionRef = useRef(null);
   const puedeDescargar = nombre.trim() && tratamiento;
-
-
-
+  
 
 
 const descargarImagen = async () => {
   if (!invitacionRef.current) return;
 
   try {
-    const dataUrl = await toPng(invitacionRef.current, {
+    const dataUrl = await toJpeg(invitacionRef.current, {
       cacheBust: true,
-      pixelRatio: 2, // mejor calidad
+      pixelRatio: 2,
+      quality: 0.92,
     });
 
     const link = document.createElement("a");
     link.href = dataUrl;
-    link.download = "invitacion.png";
+    link.download = "invitacion.jpg";
 
     document.body.appendChild(link);
     link.click();
@@ -34,6 +35,9 @@ const descargarImagen = async () => {
     alert("No se pudo descargar la invitación");
   }
 };
+
+
+
 
   return (
     
@@ -64,7 +68,14 @@ const descargarImagen = async () => {
 
       {/* INVITACIÓN */}
       <div className="invitacion" ref={invitacionRef}>
-        <img src={invitacionImg} alt="Invitación" />
+        
+          <img
+          src={invitacionImg}
+          alt="Invitación"
+          onLoad={() => setImagenLista(true)}
+          crossOrigin="anonymous"
+          />
+
 
         <div className="tratamiento-overlay">
           {tratamiento}
