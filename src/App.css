@@ -36,11 +36,10 @@ input {
 .tratamiento-overlay {
   position: absolute;
   top: 20px;
-  left: 50%;
-  transform: translateX(-50%); /* CENTRADO REAL */
+  left: 0;
+  right: 0;
 
   font-size: 20px;
-  font-weight: 500;
   letter-spacing: 1px;
   color: #496052;
   font-family: "Merriweather", Georgia, serif;
@@ -48,14 +47,16 @@ input {
   font-weight: bold;
 }
 
+
 /* NOMBRE */
 .nombre-overlay {
   position: absolute;
   top: 60px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
 
-  max-width: 90%;            /* 🔑 límite dentro de la imagen */
+  max-width: 90%;
+  margin: 0 auto;
   text-align: center;
 
   font-size: 28px;
@@ -63,10 +64,11 @@ input {
   color: #496052;
   font-family: "Merriweather", Georgia, serif;
 
-  word-wrap: break-word;     /* permite cortar palabras largas */
+  word-wrap: break-word;
   overflow-wrap: break-word;
-  white-space: normal;       /* permite múltiples líneas */
+  white-space: normal;
 }
+
 
 
 /* BOTÓN DESCARGA */
