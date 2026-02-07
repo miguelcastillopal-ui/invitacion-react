@@ -1,9 +1,9 @@
 {
-  "name": "invitacion-react",
+  "name": "invitacion-3",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://miguelcastillopal-ui.github.io/invitacion-react",
+  "homepage": "https://github.com/miguelcastillopal-ui/invitacion-3.git",
 
 "scripts": {
   "dev": "vite",
